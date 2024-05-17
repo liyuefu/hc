@@ -1,0 +1,28 @@
+update: 2023.04.28
+update: 2023.05.17 如果密码含有!特殊字符, 在!前加一个^字符.
+增加winhc_current_script.bat,不替换scripts. 使用上次创建的config.ini
+
+1、cfg目录为配置文件所在目录，
+文件1) info.ini ,包括各个服务器登录信息和配置文件名.
+ip,oracle密码,配置文件名
+
+192.168.56.91,oracle,config-source.ini
+192.168.56.92,oracle,config-dest.ini
+192.168.56.201,oracle,config-rac.ini
+192.168.56.7,oracle,config-hol.ini
+
+2) 其它配置文件,名字为上述列出的config*.ini
+修改client部分内容,比如
+[client]
+client_name = 张江期货
+client_app_name = CTP期货交易系统
+client_app_db_name = 生产库
+client_dba_name = 张三
+disaster_recovery = 
+
+2、output为脚本输出目录，巡检脚本执行后产生的tar包会自动上传至该目录；
+3、scripts为巡检脚本存放位置；
+4、执行winhc.bat脚本，需保证该脚本放于可以访问info.ini下IP的运维机上；
+5、脚本会先建立/home/oracle/scripts/old目录，将原来/home/oracle/scripts/healthcheck目录下的内容备份至/home/oracle/scripts/old以当天日期命名的目录。然后新建/home/oracle/scripts/healthcheck目录解压并执行
+1)hc.sh 巡检
+2)clear_oracle_lsnr_aud_log.sh 清理侦听日志和audit日志。
