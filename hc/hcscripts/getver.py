@@ -1,5 +1,11 @@
 import sys
-f=open('/tmp/pyver.txt','w')
+
+if len(sys.argv) > 1:
+    TMPDIR = sys.argv[1]
+else:
+    TMPDIR = '/tmp'
+FILE = TMPDIR + "/pyver.txt"
+f=open(FILE,'w')
 tmp= sys.version
 ver=tmp.split()
 f.write(ver[0])

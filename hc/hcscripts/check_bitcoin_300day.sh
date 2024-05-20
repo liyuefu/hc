@@ -20,14 +20,6 @@ EOF
 fi
 ALERT_FILE=${ALERT_PATH}/alert_$ORACLE_SID.log
 
-function write_log()
-{
-  now_time='['$(date +"%Y-%m-%d %H:%M:%S")']'
-  echo -e "\n${INFO}`date +%F' '%T`: $1 "
-  echo -e "\n`date +%F' '%T`: $1 " >> ${LOG_FILE}
-}
-
-
 sqlplus -S / as sysdba <<EOF > ${CHECK_FILE}
 !echo '(1):select statement for check attack dba_objects view'  
 COL OWNER FOR A20
@@ -104,5 +96,6 @@ else
    echo "NO 300 day del \$tab attach database" 
    echo "---------------------------------------">>${CHECK_FILE}
    echo "NO 300 day del \$tab attach database" >>${CHECK_FILE}
+   echo "---------------------------------------">>${CHECK_FILE}
 
 fi

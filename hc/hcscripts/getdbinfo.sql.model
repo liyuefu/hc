@@ -1,0 +1,75 @@
+set heading off
+set echo off
+set termout off
+set linesize 20
+set pagesize 9999
+set feedback off
+
+spool TMPPATH/dbname.tmp
+select lower(name) from v$database;
+spool off
+
+spool TMPPATH/db_unique_name.tmp
+select lower(db_unique_name) from v$database;
+spool off
+
+spool TMPPATH/cluster.tmp
+select value from v$parameter where name = 'cluster_database';
+spool off
+
+spool TMPPATH/cluster_database_instances.tmp
+select value from v$parameter where name = 'cluster_database_instances';
+spool off
+
+
+spool TMPPATH/domain.tmp
+select value from v$parameter where name = 'db_domain';
+spool off
+
+spool TMPPATH/dbid.tmp
+select dbid from v$database;
+spool off
+
+spool TMPPATH/version.tmp
+select rtrim(value) from v$parameter where name = 'compatible';
+spool off
+
+
+set linesize 120
+spool TMPPATH/dbpath.tmp
+col name for a80
+col member for a80
+select name from v$datafile order by name;
+select name from v$tempfile order by name;
+spool off
+
+
+spool TMPPATH/logpath.tmp
+col name for a80
+set pagesize 9999
+col member for a80
+select member from v$logfile order by member;
+spool off
+
+spool TMPPATH/logsize.tmp
+select distinct(bytes/1024/1024) from v$log;
+spool off
+
+
+spool TMPPATH/banner.tmp
+select rtrim(lower(banner)) from v$version;
+spool off
+
+
+
+col name for a60
+col value for a10
+col asynch_io for a10
+spool TMPDIR/asynccheck.out
+select name, value from v$parameter where name in ('filesystemio_options','disk_asynch_io') order by name;
+SELECT NAME,ASYNCH_IO FROM V$DATAFILE F,V$IOSTAT_FILE I
+WHERE F.FILE#=I.FILE_NO
+AND FILETYPE_NAME='Data File';
+spool off
+
+exit
