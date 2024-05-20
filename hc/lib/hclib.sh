@@ -220,22 +220,6 @@ check_botcoin() {
 
   msg_info "check BIT_COIN_300DAYS ATTACK..."
 
-  #DBVER=`cat /tmp/dbver.txt`
-
-  # if [ ${DBVER} == '10g' ]; then
-  #    DBNAME=`cat /tmp/dbname.txt`
-  #    ALERT_PATH=$ORACLE_BASE/diag/rdbms/$DBNAME/$ORACLE_SID/trace
-  # else
-  #    ALERT_PATH=$(sqlplus -S / as sysdba <<EOF
-  # set heading off;
-  # set termout off;
-  # set echo off;
-  # select trim(value) from v\$diag_info where name='Diag Trace';
-  # EOF
-  # )
-  # fi
-  # ALERT_FILE=${ALERT_PATH}/alert_$ORACLE_SID.log
-
   $ORACLE_HOME/bin/sqlplus -S / as sysdba <<EOF > ${CHECK_FILE}
   !echo '(1):select statement for check attack dba_objects view'  
   COL OWNER FOR A20
@@ -335,5 +319,29 @@ check_hidden_para() {
 
   exit;
 EOF
+
+}
+
+
+
+#async check.
+#$1 ORACLE_HOME
+#$2 async check output file name, absolute path.
+check_async() {
+  ORACLE_HOME=$1
+  OUTFILE=$2
+
+  sqlplus -s $CONN <<EOF >$OUTFILE
+  col name for a60
+  col value for a10
+  col asynch_io for a10
+  select name, value from v\$parameter where name in ('filesystemio_options','disk_asynch_io') order by name;
+  SELECT NAME,ASYNCH_IO FROM V\$DATAFILE F,V\$IOSTAT_FILE I
+  WHERE F.FILE#=I.FILE_NO
+  AND FILETYPE_NAME='Data File';
+EOF
+
+  cat /proc/sys/fs/aio-max-nr >> $OUTFILE
+  cat /proc/sys/fs/aio-nr >>$OUTFILE
 
 }

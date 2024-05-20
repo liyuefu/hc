@@ -78,7 +78,7 @@ wrap_output() {
   msg_info "Healthcheck for DBNAME: $DBNAME, ORACLE_SID: $ORACLE_SID is done.outputfile is :$OUTPUTNAME"
 
   cp hc.sh config.ini ${USING_PYTHON} README* $OUTPUT/using_script
-  mv -f *.out *.log *.html *.docx *.txt *.tmp *.sql $OUTPUT >/dev/null 2>&1
+  mv -f *.out alert*.log autodoc*.log *.html *.docx *.txt *.tmp *.sql $OUTPUT >/dev/null 2>&1
 
   if [ ! -d old ]; then
     mkdir old
@@ -141,6 +141,8 @@ check_botcoin $ORACLE_HOME "$TMPDIR/bitcoin300.out" $DBNAME $DBVER_MAJOR $ALERT_
 #check hidden parameters using.
 check_hidden_para $ORACLE_HOME "$TMPDIR/check_hidden_para.out"
 
+#async check.
+check_async $ORACLE_HOME "$TMPDIR/asynccheck.out"
 
 #get scn number
 $ORACLE_HOME/bin/sqlplus -s $CONN <<EOF  >$TMPDIR/scn.txt
